@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leer un informe de ecocardiograma · Manual interactivo</title>
+<meta name="description" content="Manual interactivo para médicos no cardiólogos: cómo interpretar los datos numéricos de un informe de ecocardiograma transtorácico.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#142b3a;
+    --brand:#205070;
+    --brand-2:#2c6b8f;
+    --paper:#eef2f3;
+    --surface:#ffffff;
+    --line:#d2dde1;
+    --muted:#5e7480;
+    --ok:#1f8a6d; --ok-bg:#e2f1ea;
+    --warn:#b9821c; --warn-bg:#f7edd4;
+    --alert:#b3452e; --alert-bg:#f5e0d9;
+    --font-display:'Space Grotesk',system-ui,sans-serif;
+    --font-body:'Inter',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+    --maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--font-body);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brand)}
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.2;letter-spacing:-.01em}
+  .mono{font-family:var(--font-mono)}
+
+  /* ---------- Layout ---------- */
+  .shell{display:grid;grid-template-columns:248px 1fr;gap:0;min-height:100vh}
+  .nav{
+    position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+    background:var(--ink);color:#cfe0e8;padding:26px 18px;border-right:1px solid #0d212e;
+  }
+  .nav .brandmark{font-family:var(--font-display);font-weight:700;color:#fff;font-size:15px;letter-spacing:.02em;line-height:1.25}
+  .nav .brandsub{color:#88a7b6;font-size:11.5px;margin-top:6px;line-height:1.4}
+  .wave{display:block;margin:18px 0;opacity:.55}
+  .nav ol{list-style:none;margin:0;padding:0;counter-reset:s}
+  .nav li a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:#a9c4d1;
+    font-size:13.5px;padding:7px 9px;border-radius:7px;margin:1px 0;
+  }
+  .nav li a .n{font-family:var(--font-mono);font-size:11px;color:#6f93a3;min-width:18px}
+  .nav li a:hover{background:#1d3c4d;color:#fff}
+  .nav li a.active{background:var(--brand);color:#fff}
+  .nav li a.active .n{color:#bfe0f0}
+
+  .main{padding:0}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+  /* ---------- Hero ---------- */
+  .hero{background:linear-gradient(180deg,#16323f 0%, #1b3d4d 100%);color:#eaf2f5;padding:54px 0 40px}
+  .hero .wrap{display:block}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7fb0c4}
+  .hero h1{font-size:clamp(28px,5vw,40px);color:#fff;margin:14px 0 14px;font-weight:700}
+  .hero p.lead{font-size:17px;color:#bcd2dc;max-width:60ch;margin:0}
+  .hero .meta{margin-top:24px;font-size:13px;color:#8db1c1;font-family:var(--font-mono)}
+  .hero .meta b{color:#d9e8ee;font-weight:600}
+
+  /* ---------- Sections ---------- */
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  .kicker{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px}
+  .kicker::before{content:"";width:26px;height:2px;background:var(--brand);display:inline-block}
+  h2{font-size:clamp(22px,3.4vw,29px);margin:14px 0 8px}
+  h3{font-size:18px;margin:28px 0 6px;color:var(--brand)}
+  p{margin:12px 0}
+  .sub{color:var(--muted);font-size:15px;margin-top:0}
+
+  /* ---------- Components ---------- */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;margin:20px 0;box-shadow:0 1px 0 rgba(20,43,58,.03)}
+  .clin{border-left:3px solid var(--brand);background:#f3f8fa;border-radius:0 10px 10px 0;padding:14px 16px;margin:18px 0;font-size:14.5px}
+  .clin b{color:var(--brand)}
+  .trap{border-left:3px solid var(--alert);background:var(--alert-bg);border-radius:0 10px 10px 0;padding:14px 16px;margin:18px 0;font-size:14.5px}
+  .trap b{color:var(--alert)}
+
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--font-display);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#f5f8f9}
+  td.v{font-family:var(--font-mono);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+
+  .pill{display:inline-block;font-family:var(--font-mono);font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;vertical-align:middle}
+  .pill.ok{background:var(--ok-bg);color:var(--ok)}
+  .pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .pill.alert{background:var(--alert-bg);color:var(--alert)}
+
+  /* glossary tooltip */
+  .g{border-bottom:1px dotted var(--brand-2);cursor:help;position:relative}
+  .g .tip{
+    visibility:hidden;opacity:0;position:absolute;left:0;bottom:135%;z-index:30;
+    width:min(280px,76vw);background:var(--ink);color:#e8f1f5;font-size:13px;font-weight:400;
+    line-height:1.45;padding:11px 13px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.22);
+    transition:opacity .15s, transform .15s;transform:translateY(4px);font-family:var(--font-body);
+    text-transform:none;letter-spacing:normal;
+  }
+  .g:hover .tip,.g:focus .tip,.g:focus-within .tip{visibility:visible;opacity:1;transform:translateY(0)}
+
+  /* interactive tool */
+  .tool{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:24px 0}
+  .tool-head{background:var(--ink);color:#dceaf0;padding:13px 18px;font-family:var(--font-display);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px}
+  .tool-head .tag{font-family:var(--font-mono);font-size:10.5px;background:var(--brand);color:#fff;padding:2px 7px;border-radius:5px;letter-spacing:.06em}
+  .tool-body{padding:20px}
+  .field{margin:14px 0}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  .field .hint{color:var(--muted);font-weight:400;font-size:12px}
+  input[type=range]{width:100%;accent-color:var(--brand)}
+  input[type=number]{width:110px;font-family:var(--font-mono);font-size:15px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fbfdfd}
+  input[type=number]:focus,select:focus,button:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+  select{font-family:var(--font-body);font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fbfdfd}
+  .val{font-family:var(--font-mono);font-weight:600;color:var(--brand)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{font-family:var(--font-body);font-size:13px;font-weight:600;padding:8px 14px;border:none;background:#fbfdfd;color:var(--muted);cursor:pointer}
+  .seg button[aria-pressed=true]{background:var(--brand);color:#fff}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin:8px 0;background:#fbfdfd;font-size:14px}
+  .toggle button{font-family:var(--font-mono);font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--muted);padding:6px 12px;border-radius:7px;cursor:pointer}
+  .toggle button[aria-pressed=true]{background:var(--alert);border-color:var(--alert);color:#fff}
+  .readout{margin-top:16px;padding:16px;border-radius:11px;background:#f4f8f9;border:1px solid var(--line)}
+  .readout .label{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .readout .result{font-family:var(--font-display);font-size:20px;font-weight:700;margin:4px 0 6px}
+  .readout .why{font-size:13.5px;color:var(--ink)}
+
+  button.primary{font-family:var(--font-display);font-weight:600;font-size:14px;background:var(--brand);color:#fff;border:none;padding:11px 18px;border-radius:9px;cursor:pointer}
+  button.primary:hover{background:var(--brand-2)}
+
+  /* collapsible reference */
+  details{border:1px solid var(--line);border-radius:11px;margin:10px 0;background:var(--surface);overflow:hidden}
+  details>summary{cursor:pointer;padding:13px 16px;font-family:var(--font-display);font-weight:600;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  details>summary::-webkit-details-marker{display:none}
+  details>summary::after{content:"+";font-family:var(--font-mono);color:var(--brand);font-size:18px}
+  details[open]>summary::after{content:"–"}
+  details .inner{padding:0 16px 14px}
+
+  /* quiz */
+  .q{margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+  .q .stem{font-weight:600;margin-bottom:12px}
+  .q .opt{display:block;width:100%;text-align:left;font-family:var(--font-body);font-size:14px;padding:11px 13px;margin:7px 0;border:1px solid var(--line);border-radius:9px;background:#fbfdfd;cursor:pointer}
+  .q .opt:hover{border-color:var(--brand-2)}
+  .q .opt.correct{background:var(--ok-bg);border-color:var(--ok);color:#0d5c45}
+  .q .opt.wrong{background:var(--alert-bg);border-color:var(--alert);color:#7c2c1b}
+  .q .fb{margin-top:11px;font-size:13.5px;padding:11px 13px;border-radius:9px;background:#f3f8fa;display:none}
+  .q .fb.show{display:block}
+  .scorebar{font-family:var(--font-mono);font-size:13px;color:var(--muted);margin-top:8px}
+
+  /* SVG figure */
+  figure{margin:20px 0;text-align:center}
+  figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;font-style:italic}
+
+  /* exam */
+  .progress{height:8px;background:#e3ebee;border-radius:6px;overflow:hidden;margin-bottom:12px}
+  .progress>i{display:block;height:100%;background:var(--brand);transition:width .25s}
+  .examMeta{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:10px}
+  .lvlbadge{font-family:var(--font-mono);font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:999px}
+  .lvl-b{background:var(--ok-bg);color:var(--ok)}
+  .lvl-i{background:var(--warn-bg);color:var(--warn)}
+  .lvl-a{background:var(--alert-bg);color:var(--alert)}
+  .reportTitle{font-family:var(--font-display);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px}
+  .statrow{display:flex;align-items:center;gap:12px;margin:8px 0}
+  .statlbl{font-size:13px;font-weight:600;min-width:92px}
+  .statbar{flex:1;height:9px;background:#e3ebee;border-radius:6px;overflow:hidden}
+  .statbar>i{display:block;height:100%}
+  .statnum{font-family:var(--font-mono);font-size:12.5px;color:var(--muted);min-width:42px;text-align:right}
+
+  footer{background:var(--ink);color:#9fbecb;padding:34px 0;font-size:13px}
+  footer .wrap{max-width:var(--maxw)}
+  footer b{color:#dcebf1;color:#d6e7ee}
+  .disc{font-size:12px;color:#7c9eae;margin-top:14px;line-height:1.5}
+
+  /* mobile */
+  .navtoggle{display:none}
+  @media (max-width:880px){
+    .shell{grid-template-columns:1fr}
+    .nav{position:fixed;inset:0 auto 0 0;width:264px;transform:translateX(-100%);transition:transform .2s;z-index:50}
+    .nav.open{transform:translateX(0)}
+    .navtoggle{display:inline-flex;align-items:center;gap:8px;position:fixed;top:12px;right:12px;z-index:60;background:var(--ink);color:#fff;border:none;font-family:var(--font-display);font-weight:600;font-size:13px;padding:10px 14px;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(10,25,33,.45);z-index:45}
+    .scrim.show{display:block}
+  }
+</style>
+</head>
+<body>
+
+<button class="navtoggle" id="navToggle" aria-label="Abrir índice">☰ Índice</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+  <!-- NAV -->
+  <aside class="nav" id="nav" aria-label="Índice del manual">
+    <div class="brandmark">Leer un ecocardiograma</div>
+    <div class="brandsub">Manual interactivo para médicos no cardiólogos</div>
+    <svg class="wave" width="200" height="22" viewBox="0 0 200 22" fill="none" aria-hidden="true">
+      <path d="M0 11 H40 l6 -9 l7 18 l6 -15 l6 13 l5 -7 H110 l8 -11 l6 11 H200" stroke="#3a7fa0" stroke-width="1.6" fill="none"/>
+    </svg>
+    <ol>
+      <li><a href="#inicio"><span class="n">00</span> Cómo usar</a></li>
+      <li><a href="#vi"><span class="n">01</span> Ventrículo izquierdo</a></li>
+      <li><a href="#sistole"><span class="n">02</span> Función sistólica</a></li>
+      <li><a href="#ai"><span class="n">03</span> Aurícula izquierda</a></li>
+      <li><a href="#diastole"><span class="n">04</span> Función diastólica</a></li>
+      <li><a href="#vd"><span class="n">05</span> VD y presión pulmonar</a></li>
+      <li><a href="#valvulas"><span class="n">06</span> Válvulas</a></li>
+      <li><a href="#caso"><span class="n">07</span> Caso resuelto</a></li>
+      <li><a href="#referencia"><span class="n">08</span> Referencia rápida</a></li>
+      <li><a href="#quiz"><span class="n">09</span> Autoevaluación</a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Ecocardiograma transtorácico · interpretación</div>
+        <h1>Cómo leer un informe de ecocardiograma</h1>
+        <p class="lead">No para aprender a hacer el eco, sino para entender el informe que ya tienes en la mano: qué significa cada número, cuándo es normal o patológico, y qué implica para tu paciente.</p>
+        <div class="meta">Dr. Juan Fernando Carvajal Estupiñán · <b>Cardiólogo Internista</b><br>Material de uso educativo</div>
+      </div>
+    </div>
+
+    <div class="wrap">
+
+      <!-- 00 INICIO -->
+      <section id="inicio">
+        <div class="kicker">00 · Cómo usar</div>
+        <h2>Tres ideas antes de empezar</h2>
+        <p class="sub">Léelo con tu informe al lado. Cada apartado responde tres cosas: qué mide, qué es normal y —lo importante— qué significa clínicamente.</p>
+        <div class="card">
+          <p style="margin-top:0"><b>1. Casi todo se indexa por superficie corporal y cambia con el sexo.</b> Un valor "alto" en un hombre grande puede ser normal y uno "normal" en una mujer pequeña puede estar elevado. Cuando el informe da el valor indexado (mL/m², g/m²), úsalo.</p>
+          <p><b>2. Ningún dato aislado hace el diagnóstico.</b> El eco se lee integrando parámetros que cuentan una misma historia. Una FEVI normal no descarta enfermedad.</p>
+          <p style="margin-bottom:0"><b>3. "Anormal en el informe" ≠ "enfermedad clínica".</b> El informe describe; tú decides qué pesa en <em>este</em> paciente.</p>
+        </div>
+      </section>
+
+      <!-- 01 VI -->
+      <section id="vi">
+        <div class="kicker">01 · Ventrículo izquierdo</div>
+        <h2>Tamaño y paredes: hipertrofia, concéntrica o excéntrica</h2>
+        <p class="sub">Aquí viven los términos que más confunden. La clave: la hipertrofia es <b>masa</b>, y su <b>forma</b> la define el grosor parietal relativo.</p>
+
+        <figure>
+          <img src="data:image/png;base64,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" alt="Paraesternal eje largo: medición del ventrículo izquierdo — septo (SIV), cavidad (DDVI) y pared posterior (PP) — trazada bajo las puntas de la válvula mitral" style="display:block;width:100%;max-width:560px;height:auto;margin:0 auto;border-radius:10px;background:#f5f8f9"/>
+          <figcaption>Paraesternal eje largo: la medición del VI cruza, en una misma línea, el septo (SIV), la cavidad (DDVI) y la pared posterior (PP). Se traza perpendicular al eje largo del VI y justo apical a las puntas de los velos mitrales. <span style="display:block;margin-top:5px;color:#8a98a0;font-style:italic">Ilustración: Dr. Juan Fernando Carvajal Estupiñán</span></figcaption>
+        </figure>
+
+        <h3>Hipertrofia: el concepto es la masa, no solo el grosor</h3>
+        <p>Una pared engrosada <em>sugiere</em> hipertrofia, pero la hipertrofia verdadera es <b>aumento de la masa indexada</b>. Mira la masa cuando esté disponible: <span class="pill alert">H &gt; 115 g/m²</span> <span class="pill alert">M &gt; 95 g/m²</span></p>
+
+        <h3>Concéntrica vs. excéntrica: lo decide el GPR</h3>
+        <p>El <span class="g" tabindex="0">grosor parietal relativo (GPR)<span class="tip">RWT = (2 × pared posterior) / diámetro diastólico. Corte 0,42. Describe si la pared crece "hacia adentro" (concéntrica) o si domina la dilatación (excéntrica).</span></span> = <span class="mono">(2 × PP) / DDVI</span>, con corte en <span class="mono">0,42</span>. Combinándolo con la masa salen cuatro patrones. Prueba el clasificador:</p>
+
+        <!-- TOOL: geometry classifier -->
+        <div class="tool">
+          <div class="tool-head"><span class="tag">INTERACTIVO</span> Clasificador de geometría del VI</div>
+          <div class="tool-body">
+            <div class="field">
+              <label>Sexo</label>
+              <div class="seg" role="group" aria-label="Sexo">
+                <button id="sexH" aria-pressed="true">Hombre</button>
+                <button id="sexM" aria-pressed="false">Mujer</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Pared posterior — PP <span class="hint">(mm, diástole)</span> · <span class="val" id="pwVal">10</span></label>
+              <input type="range" id="pw" min="6" max="20" step="0.5" value="10">
+            </div>
+            <div class="field">
+              <label>Diámetro diastólico — DDVI <span class="hint">(mm)</span> · <span class="val" id="lvVal">48</span></label>
+              <input type="range" id="lv" min="35" max="75" step="1" value="48">
+            </div>
+            <div class="field">
+              <label>Masa indexada del VI <span class="hint">(g/m²)</span> · <span class="val" id="massVal">95</span></label>
+              <input type="range" id="mass" min="50" max="180" step="1" value="95">
+            </div>
+
+            <figure style="margin:8px 0 0">
+              <svg id="quad" width="300" height="240" viewBox="0 0 300 240" role="img" aria-label="Cuadrante de geometría del ventrículo izquierdo">
+                <!-- cells (mass increases upward) -->
+                <rect x="40" y="20" width="110" height="90" fill="#f5e0d9"/>
+                <rect x="150" y="20" width="110" height="90" fill="#f5e0d9"/>
+                <rect x="40" y="110" width="110" height="90" fill="#f3f8fa"/>
+                <rect x="150" y="110" width="110" height="90" fill="#f7edd4"/>
+                <!-- grid -->
+                <line x1="150" y1="20" x2="150" y2="200" stroke="#205070" stroke-width="1.4"/>
+                <line x1="40" y1="110" x2="260" y2="110" stroke="#205070" stroke-width="1.4"/>
+                <rect x="40" y="20" width="220" height="180" fill="none" stroke="#cdd9de" stroke-width="1"/>
+                <!-- labels -->
+                <text x="95" y="58" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#7c2c1b">Hipertrofia</text>
+                <text x="95" y="71" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#7c2c1b">excéntrica</text>
+                <text x="205" y="58" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#7c2c1b">Hipertrofia</text>
+                <text x="205" y="71" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#7c2c1b">concéntrica</text>
+                <text x="95" y="159" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#5e7480">Normal</text>
+                <text x="205" y="152" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#8a6510">Remodelado</text>
+                <text x="205" y="165" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#8a6510">concéntrico</text>
+                <!-- axis -->
+                <text x="150" y="216" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#205070">GPR 0,42 →</text>
+                <text x="20" y="115" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#205070" transform="rotate(-90 20 115)">↑ masa</text>
+                <!-- live point -->
+                <circle id="pt" cx="95" cy="65" r="7" fill="#205070" stroke="#fff" stroke-width="2"/>
+              </svg>
+            </figure>
+
+            <div class="readout">
+              <div class="label">Resultado</div>
+              <div class="result" id="geoResult">—</div>
+              <div class="why" id="geoWhy"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clin"><b>Implicación clínica.</b> <em>Concéntrica</em> → sobrecarga de presión (hipertensión, estenosis aórtica, miocardiopatía hipertrófica); se asocia a disfunción diastólica e <span class="g" tabindex="0">HFpEF<span class="tip">Insuficiencia cardíaca con fracción de eyección preservada (FEVI ≥ 50%).</span></span>. <em>Excéntrica</em> → sobrecarga de volumen (insuficiencia aórtica/mitral, miocardiopatía dilatada) o corazón del deportista.</div>
+        <div class="trap"><b>Trampa.</b> Ver "hipertrofia concéntrica" en un disneico con FEVI conservada obliga a leer con lupa la diástole y la aurícula izquierda: probable HFpEF.</div>
+        <div class="trap"><b>Trampa del septum sigmoide.</b> En personas mayores es muy frecuente un <span class="g" tabindex="0">abultamiento basal del septo<span class="tip">Septum sigmoide o "septal bulge": engrosamiento localizado del septo basal, frecuente con la edad. Donde se mida cambia mucho el número: justo en el bulto puede leer 17 mm y, unos milímetros hacia el ápex, 7 mm.</span></span> (septum sigmoide). El grosor reportado depende mucho de dónde se midió, y un "septo grueso" aislado en un anciano puede ser este hallazgo benigno, no hipertrofia difusa ni miocardiopatía hipertrófica. Si solo el septo basal está engrosado y el resto del VI es normal, sospéchalo antes de hablar de hipertrofia o HCM.</div>
+        <div class="clin"><b>Cómo nace el número (para saber cuándo dudar).</b> Las medidas del VI se toman en telediástole, justo bajo las puntas de la mitral, perpendiculares al eje largo y sin incluir músculos papilares. Una imagen <b>fuera de eje o acortada</b> subestima los diámetros y los volúmenes (un mismo VI puede pasar de 47 a 44 mm solo por mal alineamiento), y por tanto puede dar un VI falsamente pequeño o una FEVI imprecisa. Si las cifras no cuadran con el cuadro clínico, considera la calidad técnica del estudio.</div>
+      </section>
+
+      <!-- 02 SISTOLE -->
+      <section id="sistole">
+        <div class="kicker">02 · Función sistólica</div>
+        <h2>Fracción de eyección y strain</h2>
+        <p class="sub">El número más mirado del informe — y el que más se malinterpreta.</p>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Valor</th><th>Lectura</th></tr></thead>
+          <tbody>
+            <tr><td>FEVI</td><td class="v">≥ 50 %</td><td>Conservada</td></tr>
+            <tr><td>FEVI</td><td class="v">41–49 %</td><td>Levemente reducida</td></tr>
+            <tr><td>FEVI</td><td class="v">30–40 %</td><td>Moderadamente reducida</td></tr>
+            <tr><td>FEVI</td><td class="v">&lt; 30 %</td><td>Severamente reducida</td></tr>
+            <tr><td><span class="g" tabindex="0">GLS<span class="tip">Strain longitudinal global: deformación del miocardio. Es un número negativo; más negativo = mejor.</span></span></td><td class="v">~ −18 a −20 %</td><td>Normal (más negativo)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>¿Qué se considera normal?</h3>
+        <p>La tabla de arriba es la lectura <b>funcional</b> rápida (la que usan las guías de insuficiencia cardíaca: FE preservada ≥ 50 %, levemente reducida 41–49 %, reducida ≤ 40 %). Pero los <b>valores de referencia de normalidad son específicos por sexo</b>: en la última guía de cuantificación (ASE/EACVI 2015) la FEVI normal es algo más alta en mujeres, y el valor medio sano ronda 62–64 %. Por eso una FEVI de "50 %", aunque entra en el rango conservado funcional, ya está por debajo del límite inferior de lo normal.</p>
+        <table>
+          <thead><tr><th>Categoría (ASE/EACVI 2015)</th><th>Hombres</th><th>Mujeres</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill ok">Normal</span></td><td class="v">52–72 %</td><td class="v">54–74 %</td></tr>
+            <tr><td><span class="pill warn">Levemente reducida</span></td><td class="v">41–51 %</td><td class="v">41–53 %</td></tr>
+            <tr><td><span class="pill warn">Moderadamente reducida</span></td><td class="v">30–40 %</td><td class="v">30–40 %</td></tr>
+            <tr><td><span class="pill alert">Severamente reducida</span></td><td class="v">&lt; 30 %</td><td class="v">&lt; 30 %</td></tr>
+          </tbody>
+        </table>
+        <p>El método confiable es <b>Simpson biplano</b> (trazado de discos); si está disponible, el <b>3D</b> es aún mejor. El cálculo de FEVI a partir de medidas lineales (<b>Teichholz</b>) ya no se recomienda y no debería reportarse, sobre todo si hay alteraciones segmentarias. Cuando el endocardio se ve mal, el uso de <span class="g" tabindex="0">contraste<span class="tip">Agente realzador de ultrasonido (UEA). Mejora la definición del borde endocárdico cuando dos o más segmentos contiguos no se ven; aumenta la fiabilidad de la FEVI.</span></span> mejora mucho la medición.</p>
+        <div class="trap"><b>Trampa.</b> Una FEVI normal <u>no</u> descarta enfermedad: HFpEF, valvulopatía severa o disfunción diastólica pueden coexistir con FEVI 60 %. Si el GLS es poco negativo (p. ej. −14 %) con FEVI normal, hay disfunción sistólica subclínica (clave en cardiotoxicidad).</div>
+        <div class="clin"><b>Sobre el strain entre estudios.</b> El GLS depende del equipo y del software: los rangos normales aún no están estandarizados entre fabricantes. Para comparar en el tiempo (p. ej. seguimiento de quimioterapia), los estudios deben hacerse en el <b>mismo equipo</b>; no compares un GLS de una marca con el de otra.</div>
+      </section>
+
+      <!-- 03 AI -->
+      <section id="ai">
+        <div class="kicker">03 · Aurícula izquierda</div>
+        <h2>La "hemoglobina glicada" de las presiones de llenado</h2>
+        <p class="sub">Se dilata cuando las presiones llevan tiempo elevadas. Lo confiable es el volumen indexado, no el diámetro.</p>
+        <table>
+          <thead><tr><th>Volumen indexado (mL/m²)</th><th>Lectura</th></tr></thead>
+          <tbody>
+            <tr><td class="v">≤ 34</td><td><span class="pill ok">Normal</span></td></tr>
+            <tr><td class="v">35–41</td><td><span class="pill warn">Dilatación leve</span></td></tr>
+            <tr><td class="v">42–48</td><td><span class="pill warn">Dilatación moderada</span></td></tr>
+            <tr><td class="v">≥ 49</td><td><span class="pill alert">Dilatación severa</span></td></tr>
+          </tbody>
+        </table>
+        <div class="clin"><b>Implicación clínica.</b> Con válvula mitral normal y ritmo sinusal, una AI dilatada refleja <b>presiones de llenado crónicamente elevadas</b>: pilar del diagnóstico de disfunción diastólica y de HFpEF, y marcador independiente de riesgo de <b>fibrilación auricular</b>. Si hay FA o valvulopatía mitral, su valor como marcador de presiones cambia.</div>
+      </section>
+
+      <!-- 04 DIASTOLE -->
+      <section id="diastole">
+        <div class="kicker">04 · Función diastólica</div>
+        <h2>La parte que más cuesta</h2>
+        <p class="sub">Responde una pregunta clínica concreta: ¿están elevadas las presiones de llenado? Es decir, ¿es el corazón la causa probable de la disnea?</p>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Umbral anormal</th></tr></thead>
+          <tbody>
+            <tr><td>e' septal</td><td class="v">&lt; 7 cm/s</td></tr>
+            <tr><td>e' lateral</td><td class="v">&lt; 10 cm/s</td></tr>
+            <tr><td>E/e' promedio</td><td class="v">&gt; 14</td></tr>
+            <tr><td>Velocidad RT</td><td class="v">&gt; 2,8 m/s</td></tr>
+            <tr><td>Volumen AI indexado</td><td class="v">&gt; 34 mL/m²</td></tr>
+          </tbody>
+        </table>
+
+        <!-- TOOL: diastolic helper -->
+        <div class="tool">
+          <div class="tool-head"><span class="tag">INTERACTIVO</span> ¿Hay disfunción diastólica? (FEVI normal)</div>
+          <div class="tool-body">
+            <p style="margin-top:0;font-size:13.5px;color:var(--muted)">Marca cada variable que esté <b>anormal</b> en el informe:</p>
+            <div class="toggle"><span>e' reducido (septal &lt;7 o lateral &lt;10)</span><button data-d aria-pressed="false">No</button></div>
+            <div class="toggle"><span>E/e' promedio &gt; 14</span><button data-d aria-pressed="false">No</button></div>
+            <div class="toggle"><span>Velocidad RT &gt; 2,8 m/s</span><button data-d aria-pressed="false">No</button></div>
+            <div class="toggle"><span>Volumen AI indexado &gt; 34 mL/m²</span><button data-d aria-pressed="false">No</button></div>
+            <div class="readout">
+              <div class="label">Lectura (regla de mayoría sobre 4 variables)</div>
+              <div class="result" id="diaResult">Normal</div>
+              <div class="why" id="diaWhy">0 de 4 variables anormales.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Cómo se llega al "grado" (lenguaje sencillo)</h3>
+        <table>
+          <thead><tr><th>Grado</th><th>Patrón</th><th>Significado clínico</th></tr></thead>
+          <tbody>
+            <tr><td><b>I</b></td><td>Relajación alterada, presiones normales</td><td>Frecuente con edad/HTA. Suele ser asintomático; por sí solo no es insuficiencia cardíaca.</td></tr>
+            <tr><td><b>II</b></td><td>"Pseudonormal", presiones elevadas</td><td>Parece normal, pero E/e' alto + AI dilatada delatan presiones altas. En disnea → causa cardíaca (HFpEF).</td></tr>
+            <tr><td><b>III</b></td><td>Restrictivo, presiones muy elevadas</td><td>Peor pronóstico; suele acompañar IC avanzada.</td></tr>
+          </tbody>
+        </table>
+        <div class="clin"><b>Regla práctica.</b> "Disfunción diastólica" en el informe <u>no</u> equivale a insuficiencia cardíaca. Lo que cambia la conducta es la combinación <b>presiones elevadas</b> (E/e' alto + AI dilatada + RT elevada, es decir grado II–III) en un paciente sintomático.</div>
+        <div class="clin"><b>El truco del patrón "pseudonormal".</b> Un E/A que parece normal puede esconder presiones altas (grado II). Si el informe menciona una <b>maniobra de Valsalva</b>: en presiones de llenado elevadas la onda E cae más que la A y la relación E/A disminuye, desenmascarando el patrón. Es una pista de que ese E/A "normal" no era tan normal.</div>
+        <div class="sub" style="font-size:13.5px"><b>Dato extra.</b> Algunos informes incluyen la <span class="g" tabindex="0">velocidad de propagación (Vp)<span class="tip">Velocidad de propagación del flujo de llenado por M-mode color. Índice de relajación del VI relativamente independiente de la precarga.</span></span> por M-mode color: &gt; 50–55 cm/s es normal; &lt; 45 cm/s se asocia a relajación alterada.</div>
+      </section>
+
+      <!-- 05 VD -->
+      <section id="vd">
+        <div class="kicker">05 · Ventrículo derecho y presión pulmonar</div>
+        <h2>El VD no se mide con FEVI</h2>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Normal</th><th>Mide</th></tr></thead>
+          <tbody>
+            <tr><td>Diámetro basal VD</td><td class="v">≤ 41 mm</td><td>Tamaño</td></tr>
+            <tr><td><span class="g" tabindex="0">TAPSE<span class="tip">Excursión sistólica del plano del anillo tricuspídeo: función longitudinal del VD, fácil y reproducible.</span></span></td><td class="v">≥ 17 mm</td><td>Función sistólica VD</td></tr>
+            <tr><td>Onda s' tricuspídea</td><td class="v">≥ 9,5 cm/s</td><td>Función sistólica VD</td></tr>
+            <tr><td>FAC</td><td class="v">≥ 35 %</td><td>Función global VD</td></tr>
+          </tbody>
+        </table>
+
+        <!-- TOOL: PASP -->
+        <div class="tool">
+          <div class="tool-head"><span class="tag">INTERACTIVO</span> Estimar presión sistólica pulmonar (PSAP)</div>
+          <div class="tool-body">
+            <div class="field">
+              <label>Velocidad pico de regurgitación tricuspídea <span class="hint">(m/s)</span> · <span class="val" id="trVal">2.8</span></label>
+              <input type="range" id="tr" min="1.5" max="5" step="0.1" value="2.8">
+            </div>
+            <div class="field">
+              <label>Vena cava inferior (presión de aurícula derecha)</label>
+              <select id="ivc">
+                <option value="3">≤ 21 mm y colapsa &gt; 50 % → PAD ≈ 3 mmHg</option>
+                <option value="8">Intermedio → PAD ≈ 8 mmHg</option>
+                <option value="15">&gt; 21 mm y colapsa &lt; 50 % → PAD ≈ 15 mmHg</option>
+              </select>
+            </div>
+            <div class="readout">
+              <div class="label">PSAP = 4 × v² + PAD</div>
+              <div class="result mono" id="paspResult">— mmHg</div>
+              <div class="why" id="paspWhy"></div>
+            </div>
+          </div>
+        </div>
+        <div class="trap"><b>Trampa.</b> Si la envolvente de RT es de mala calidad o "no estimable", la PSAP no es confiable: no la sobreinterpretes. Una VCI dilatada sin colapso es, por sí sola, un dato útil de congestión.</div>
+        <div class="trap"><b>El Doppler subestima si no va paralelo al flujo.</b> Toda velocidad medida (RT para la PSAP, gradientes valvulares) se <u>subestima</u> cuando el haz no está alineado con el flujo. Por eso el ecocardiografista interroga varias ventanas y reporta la <b>velocidad más alta y de mejor calidad</b>, sin promediar planos. Para ti, la lección es que una PSAP o un gradiente "normales" pueden estar falsamente bajos si la técnica no fue óptima; el dato fiable es el máximo de buena calidad.</div>
+      </section>
+
+      <!-- 06 VALVULAS -->
+      <section id="valvulas">
+        <div class="kicker">06 · Válvulas</div>
+        <h2>Severidad: la señal de alarma del informe</h2>
+        <p class="sub">El informe gradúa estenosis (obstrucción) e insuficiencia (fuga) como leve, moderada o severa.</p>
+        <h3>Estenosis aórtica</h3>
+        <table>
+          <thead><tr><th></th><th>Vmax</th><th>Gradiente medio</th><th>Área</th></tr></thead>
+          <tbody>
+            <tr><td>Moderada</td><td class="v">3–4 m/s</td><td class="v">20–40 mmHg</td><td class="v">1,0–1,5 cm²</td></tr>
+            <tr><td>Severa</td><td class="v">≥ 4 m/s</td><td class="v">≥ 40 mmHg</td><td class="v">≤ 1,0 cm²</td></tr>
+          </tbody>
+        </table>
+        <div class="trap"><b>Trampa.</b> Existe la estenosis aórtica severa de <b>bajo flujo–bajo gradiente</b>: área pequeña con gradiente "solo" moderado porque la FEVI o el volumen latido están bajos. No descartes severidad por el gradiente; mira el área.</div>
+        <p><b>Insuficiencia mitral severa</b> (orientación): vena contracta ≥ 0,7 cm, orificio regurgitante ≥ 0,40 cm², volumen regurgitante ≥ 60 mL.</p>
+        <div class="clin"><b>Implicación clínica.</b> Una valvulopatía <b>severa</b> —aunque el paciente parezca estable o la FEVI sea normal— suele requerir valoración por cardiología para decisión de intervención. La severidad es la alarma, no el síntoma.</div>
+      </section>
+
+      <!-- 07 CASO -->
+      <section id="caso">
+        <div class="kicker">07 · Caso resuelto</div>
+        <h2>Leyendo un informe línea por línea</h2>
+        <p class="sub">Mujer de 68 años, hipertensa, con disnea de esfuerzo progresiva. Revela cada línea y verás cómo se arma la historia.</p>
+        <div class="card" id="caseCard">
+          <table>
+            <thead><tr><th>El informe dice</th><th>Cómo lo lees</th></tr></thead>
+            <tbody>
+              <tr><td class="v">SIV 13 · PP 12 · DDVI 46 mm</td><td>Paredes engrosadas, cavidad no dilatada</td></tr>
+              <tr><td class="v">Masa 110 g/m² · GPR 0,52</td><td><span class="pill alert">Hipertrofia concéntrica</span></td></tr>
+              <tr><td class="v">FEVI 60 % (Simpson)</td><td><span class="pill ok">Sistólica conservada</span></td></tr>
+              <tr><td class="v">VAI 42 mL/m²</td><td><span class="pill warn">AI dilatada (moderada)</span></td></tr>
+              <tr><td class="v">E/A 0,7 · E/e' 16 · RT 3,0</td><td><span class="pill alert">Disfunción diastólica II, presiones elevadas</span></td></tr>
+              <tr><td class="v">TAPSE 19 · PSAP 42 mmHg</td><td>VD normal; presión pulmonar levemente elevada</td></tr>
+              <tr><td class="v">IM leve · esclerosis aórtica</td><td>Sin valvulopatía significativa</td></tr>
+            </tbody>
+          </table>
+          <div class="clin" style="margin-bottom:0"><b>Lectura integrada.</b> Hipertrofia concéntrica + FEVI conservada + disfunción diastólica grado II con presiones elevadas + AI dilatada cuentan la misma historia: un cuadro compatible con <b>HFpEF</b>. La disnea de esta paciente es, muy probablemente, de origen cardíaco. Ese es el salto del "informe lleno de números" a la decisión clínica.</div>
+        </div>
+      </section>
+
+      <!-- 08 REFERENCIA -->
+      <section id="referencia">
+        <div class="kicker">08 · Referencia rápida</div>
+        <h2>Valores normales de bolsillo</h2>
+        <details>
+          <summary>Ventrículo izquierdo</summary>
+          <div class="inner"><table>
+            <tr><td>Grosor SIV / PP (diástole)</td><td class="v">6–10 mm (H) · 6–9 mm (M)</td></tr>
+            <tr><td>Masa indexada</td><td class="v">≤115 (H) · ≤95 (M) g/m²</td></tr>
+            <tr><td>GPR</td><td class="v">≤0,42 (&gt;0,42 = concéntrico)</td></tr>
+            <tr><td>FEVI normal (ASE 2015)</td><td class="v">52–72 % (H) · 54–74 % (M)</td></tr>
+            <tr><td>GLS</td><td class="v">~ más negativo de −18 a −20 %</td></tr>
+          </table></div>
+        </details>
+        <details>
+          <summary>Aurícula y diástole</summary>
+          <div class="inner"><table>
+            <tr><td>Volumen AI indexado</td><td class="v">≤34 mL/m²</td></tr>
+            <tr><td>e' septal / lateral</td><td class="v">≥7 / ≥10 cm/s</td></tr>
+            <tr><td>E/e' promedio</td><td class="v">≤14</td></tr>
+            <tr><td>Velocidad RT</td><td class="v">≤2,8 m/s</td></tr>
+            <tr><td>Vp (M-mode color)</td><td class="v">&gt;50–55 cm/s</td></tr>
+          </table></div>
+        </details>
+        <details>
+          <summary>Vistas y siglas que verás nombradas en el informe</summary>
+          <div class="inner"><table>
+            <tr><td>PLAX</td><td>Paraesternal eje largo — VI, AI, válvulas aórtica y mitral</td></tr>
+            <tr><td>PSAX</td><td>Paraesternal eje corto (niveles: grandes vasos, mitral, papilares, ápex)</td></tr>
+            <tr><td>A4C / A5C</td><td>Apical 4 cámaras / 5 cámaras (suma el tracto de salida aórtico)</td></tr>
+            <tr><td>A2C / A3C</td><td>Apical 2 cámaras / 3 cámaras (eje largo apical)</td></tr>
+            <tr><td>Subcostal</td><td>Cuatro cámaras, septos y VCI (volemia / presión de AD)</td></tr>
+            <tr><td>Supraesternal</td><td>Arco aórtico (coartación, aorta)</td></tr>
+          </table></div>
+        </details>
+        <details>
+          <summary>Ventrículo derecho y pulmonar</summary>
+          <div class="inner"><table>
+            <tr><td>TAPSE</td><td class="v">≥17 mm</td></tr>
+            <tr><td>Diámetro basal VD</td><td class="v">≤41 mm</td></tr>
+            <tr><td>PSAP</td><td class="v">aprox. &lt;35 mmHg</td></tr>
+          </table></div>
+        </details>
+        <details>
+          <summary>Errores frecuentes al leer un informe</summary>
+          <div class="inner">
+            <p>· Quedarse solo en la FEVI (no descarta HFpEF ni valvulopatía severa).</p>
+            <p>· Confundir grosor con hipertrofia: mira la masa y el GPR.</p>
+            <p>· Tomar "disfunción diastólica grado I" como insuficiencia cardíaca.</p>
+            <p>· Creer un gradiente aórtico "solo moderado" sin mirar el área.</p>
+            <p>· Sobreinterpretar una PSAP de mala calidad o medida con mal ángulo Doppler.</p>
+            <p>· Confundir un septum sigmoide (anciano) con hipertrofia o miocardiopatía hipertrófica.</p>
+            <p>· No considerar que una imagen fuera de eje subestima diámetros, volúmenes y FEVI.</p>
+            <p style="margin-bottom:0">· Olvidar el contexto: la AI dilatada significa algo distinto con FA o valvulopatía mitral.</p>
+          </div>
+        </details>
+      </section>
+
+      <!-- 09 QUIZ -->
+      <section id="quiz">
+        <div class="kicker">09 · Autoevaluación</div>
+        <h2>Pon a prueba la lectura</h2>
+        <p class="sub">Banco amplio con tres niveles de dificultad y retroalimentación inmediata. Cada intento toma preguntas nuevas: no se repiten hasta agotar el banco. No es certificación, es entrenamiento.</p>
+        <div class="tool">
+          <div class="tool-head"><span class="tag">EXAMEN</span> <span id="examTitle">Configura tu intento</span></div>
+          <div class="tool-body" id="examHost"></div>
+        </div>
+      </section>
+
+    </div><!-- /wrap -->
+
+    <footer>
+      <div class="wrap">
+        <b>Cómo leer un informe de ecocardiograma</b> · Manual interactivo para médicos no cardiólogos.<br>
+        Dr. Juan Fernando Carvajal Estupiñán — Cardiólogo Internista.
+        <div class="disc">Metodología de adquisición y medición según la guía ASE 2019 de ecocardiograma transtorácico completo en adultos (Mitchell et al., JASE). Las cifras de referencia siguen la cuantificación de cámaras (ASE/EACVI 2015, Lang et al.) y la función diastólica (ASE/EACVI 2016, Nagueh et al.), referenciadas por esa guía. Son orientadoras; cada laboratorio puede tener matices y la integración clínica siempre manda sobre el número aislado. Material educativo; no sustituye el juicio clínico ni la valoración especializada.</div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(s,c){return (c||document).querySelector(s);};
+  var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+
+  /* ---- mobile nav ---- */
+  var nav=$("#nav"), scrim=$("#scrim"), toggle=$("#navToggle");
+  function closeNav(){nav.classList.remove("open");scrim.classList.remove("show");}
+  toggle.addEventListener("click",function(){nav.classList.toggle("open");scrim.classList.toggle("show");});
+  scrim.addEventListener("click",closeNav);
+  $$(".nav a").forEach(function(a){a.addEventListener("click",closeNav);});
+
+  /* ---- active section highlight ---- */
+  var links={};
+  $$(".nav a").forEach(function(a){links[a.getAttribute("href").slice(1)]=a;});
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          $$(".nav a").forEach(function(a){a.classList.remove("active");});
+          var l=links[e.target.id]; if(l)l.classList.add("active");
+        }
+      });
+    },{rootMargin:"-45% 0px -50% 0px"});
+    $$("section").forEach(function(s){io.observe(s);});
+  }
+
+  /* ---- geometry classifier ---- */
+  var sex="H";
+  var pw=$("#pw"), lv=$("#lv"), mass=$("#mass");
+  var pwVal=$("#pwVal"), lvVal=$("#lvVal"), massVal=$("#massVal");
+  function setSex(s){
+    sex=s;
+    $("#sexH").setAttribute("aria-pressed", s==="H");
+    $("#sexM").setAttribute("aria-pressed", s==="M");
+    geo();
+  }
+  $("#sexH").addEventListener("click",function(){setSex("H");});
+  $("#sexM").addEventListener("click",function(){setSex("M");});
+
+  function geo(){
+    var p=parseFloat(pw.value), d=parseFloat(lv.value), m=parseFloat(mass.value);
+    pwVal.textContent=p; lvVal.textContent=d; massVal.textContent=m;
+    var rwt=(2*p)/d;
+    var massCut = sex==="H"?115:95;
+    var massHigh = m>massCut;
+    var conc = rwt>0.42;
+    var label, cls, why;
+    if(!massHigh && !conc){ label="Geometría normal"; cls="ok"; }
+    else if(!massHigh && conc){ label="Remodelado concéntrico"; cls="warn"; }
+    else if(massHigh && conc){ label="Hipertrofia concéntrica"; cls="alert"; }
+    else { label="Hipertrofia excéntrica"; cls="alert"; }
+    var rwtTxt = rwt.toFixed(2).replace(".",",");
+    why = "GPR = "+rwtTxt+" ("+(conc?"&gt;":"≤")+"0,42) · masa "+m+" g/m² ("+(massHigh?"&gt;":"≤")+massCut+", "+(massHigh?"aumentada":"normal")+").";
+    var r=$("#geoResult"); r.textContent=label;
+    r.style.color = cls==="ok"?"var(--ok)":cls==="warn"?"var(--warn)":"var(--alert)";
+    $("#geoWhy").innerHTML=why;
+    // plot point: x from rwt (0.25..0.65 -> 40..260), y from mass relative to cut
+    var x = 40 + Math.max(0,Math.min(1,(rwt-0.25)/(0.65-0.25)))*220;
+    var yRatio = Math.max(0,Math.min(1,(m-(massCut-45))/90)); // center band around cut
+    var y = 200 - yRatio*180;
+    var pt=$("#pt"); pt.setAttribute("cx",x.toFixed(1)); pt.setAttribute("cy",y.toFixed(1));
+    pt.setAttribute("fill", cls==="ok"?"#1f8a6d":cls==="warn"?"#b9821c":"#b3452e");
+  }
+  [pw,lv,mass].forEach(function(el){el.addEventListener("input",geo);});
+  geo();
+
+  /* ---- diastolic helper ---- */
+  var dBtns=$$("[data-d]");
+  dBtns.forEach(function(b){
+    b.addEventListener("click",function(){
+      var on=b.getAttribute("aria-pressed")==="true";
+      b.setAttribute("aria-pressed",!on);
+      b.textContent = !on ? "Sí" : "No";
+      dia();
+    });
+  });
+  function dia(){
+    var n=dBtns.filter(function(b){return b.getAttribute("aria-pressed")==="true";}).length;
+    var res=$("#diaResult"), why=$("#diaWhy");
+    var label,color;
+    if(n<=1){label="Función diastólica normal";color="var(--ok)";}
+    else if(n===2){label="Indeterminada";color="var(--warn)";}
+    else{label="Disfunción diastólica";color="var(--alert)";}
+    res.textContent=label; res.style.color=color;
+    why.textContent=n+" de 4 variables anormales. (≤1 normal · 2 indeterminada · ≥3 disfunción)";
+  }
+  dia();
+
+  /* ---- PASP estimator ---- */
+  var tr=$("#tr"), ivc=$("#ivc"), trVal=$("#trVal");
+  function pasp(){
+    var v=parseFloat(tr.value), rap=parseFloat(ivc.value);
+    trVal.textContent=v.toFixed(1);
+    var val=Math.round(4*v*v+rap);
+    var r=$("#paspResult"), why=$("#paspWhy");
+    r.textContent=val+" mmHg";
+    var label,color;
+    if(val<35){label="Dentro de lo esperado.";color="var(--ok)";}
+    else if(val<50){label="Levemente elevada — correlaciona con la clínica.";color="var(--warn)";}
+    else{label="Elevada — sugiere hipertensión pulmonar; requiere estudio.";color="var(--alert)";}
+    r.style.color=color; why.textContent="4 × "+v.toFixed(1)+"² + "+rap+" = "+val+" mmHg. "+label;
+  }
+  tr.addEventListener("input",pasp); ivc.addEventListener("change",pasp); pasp();
+
+  /* ---- exam engine ---- */
+  var BANK=[
+    /* ===== BÁSICO ===== */
+    {id:"b1",lvl:"b",stem:"FEVI 60 % por Simpson biplano. ¿Cómo se clasifica la función sistólica del VI?",opts:["Conservada","Levemente reducida","Moderadamente reducida","Severamente reducida"],correct:0,fb:"FEVI ≥ 50 % = función sistólica conservada."},
+    {id:"b2",lvl:"b",stem:"Volumen de aurícula izquierda indexado de 30 mL/m². ¿Normal o dilatada?",opts:["Normal","Dilatación leve","Dilatación moderada","Dilatación severa"],correct:0,fb:"≤ 34 mL/m² corresponde a una aurícula izquierda de tamaño normal."},
+    {id:"b3",lvl:"b",stem:"TAPSE de 14 mm. ¿Qué indica?",opts:["Función sistólica del VD normal","Función sistólica del VD reducida","Función diastólica normal","Estenosis tricuspídea"],correct:1,fb:"TAPSE < 17 mm indica función sistólica del ventrículo derecho reducida."},
+    {id:"b4",lvl:"b",stem:"e' septal de 5 cm/s. ¿Cómo se interpreta?",opts:["Relajación normal","Relajación miocárdica alterada","Estenosis mitral","Función sistólica reducida"],correct:1,fb:"e' septal < 7 cm/s indica relajación miocárdica alterada."},
+    {id:"b5",lvl:"b",stem:"¿Qué define el grosor parietal relativo (GPR)?",opts:["El tamaño de la aurícula","Si la hipertrofia es concéntrica o excéntrica","La fracción de eyección","La presión pulmonar"],correct:1,fb:"El GPR (corte 0,42) distingue la geometría concéntrica de la excéntrica."},
+    {id:"b6",lvl:"b",stem:"Masa del VI indexada de 130 g/m² en un hombre. ¿Normal o aumentada?",opts:["Normal","Aumentada","No valorable","Depende del ritmo"],correct:1,fb:"En hombres, > 115 g/m² indica masa aumentada (hipertrofia)."},
+    {id:"b7",lvl:"b",stem:"Velocidad pico de regurgitación tricuspídea de 2,4 m/s, sin otros signos. ¿Qué sugiere sobre la presión pulmonar?",opts:["Probablemente normal","Claramente elevada","No interpretable","Estenosis pulmonar"],correct:0,fb:"Una velocidad ≤ 2,8 m/s va en contra de presión pulmonar elevada."},
+    {id:"b8",lvl:"b",stem:"¿Por encima de qué valor aproximado de PSAP se considera elevada?",opts:["~15 mmHg","~35 mmHg","~60 mmHg","~90 mmHg"],correct:1,fb:"Una PSAP estimada por encima de ~35 mmHg orienta a elevación (siempre junto con la clínica)."},
+    {id:"b9",lvl:"b",stem:"FEVI de 28 %. ¿Categoría?",opts:["Conservada","Levemente reducida","Moderadamente reducida","Severamente reducida"],correct:3,fb:"FEVI < 30 % corresponde a disfunción sistólica severa."},
+    {id:"b10",lvl:"b",stem:"GLS de −12 % (recuerda: más negativo es mejor). ¿Qué indica?",opts:["Función longitudinal normal","Disfunción sistólica (anormal)","Buena reserva contráctil","Siempre es artefacto"],correct:1,fb:"Un GLS poco negativo (p. ej. −12 %) indica disfunción sistólica, incluso con FEVI normal."},
+    {id:"b11",lvl:"b",stem:"Volumen AI indexado de 49 mL/m². ¿Grado de dilatación?",opts:["Normal","Leve","Moderada","Severa"],correct:3,fb:"≥ 49 mL/m² corresponde a dilatación auricular izquierda severa."},
+    {id:"b12",lvl:"b",stem:"Grosor del septo en diástole de 8 mm. ¿Es normal?",opts:["Sí, normal","No, hipertrofia leve","No, hipertrofia severa","Indeterminado"],correct:0,fb:"6–10 mm (hombres) es un grosor parietal normal."},
+    {id:"b13",lvl:"b",stem:"En el informe lees 'A4C'. ¿A qué vista se refiere?",opts:["Paraesternal eje largo","Apical 4 cámaras","Subcostal","Supraesternal"],correct:1,fb:"A4C = apical de 4 cámaras: la vista de trabajo para FEVI por Simpson, TAPSE y función diastólica."},
+    {id:"b14",lvl:"b",stem:"El informe estima la presión de aurícula derecha a partir de una estructura. ¿Cuál?",opts:["La aorta","La vena cava inferior (VCI)","La válvula mitral","El septo"],correct:1,fb:"El diámetro y el colapso de la VCI estiman la presión de AD, que se suma para calcular la PSAP."},
+
+    /* ===== INTERMEDIO ===== */
+    {id:"i1",lvl:"i",stem:"SIV 14 mm, GPR 0,50, masa indexada 130 g/m² (hombre). ¿Geometría del VI?",opts:["Normal","Remodelado concéntrico","Hipertrofia concéntrica","Hipertrofia excéntrica"],correct:2,fb:"Masa aumentada + GPR > 0,42 = hipertrofia concéntrica (sobrecarga de presión: HTA, estenosis aórtica)."},
+    {id:"i2",lvl:"i",stem:"GPR 0,30 con masa indexada de 145 g/m² (hombre). ¿Geometría?",opts:["Normal","Remodelado concéntrico","Hipertrofia concéntrica","Hipertrofia excéntrica"],correct:3,fb:"Masa aumentada + GPR ≤ 0,42 = hipertrofia excéntrica (sobrecarga de volumen)."},
+    {id:"i3",lvl:"i",stem:"GPR 0,46 con masa indexada normal. ¿Geometría?",opts:["Normal","Remodelado concéntrico","Hipertrofia concéntrica","Hipertrofia excéntrica"],correct:1,fb:"GPR > 0,42 con masa normal = remodelado concéntrico (paso temprano del hipertenso)."},
+    {id:"i4",lvl:"i",stem:"FEVI normal. Diástole: e' septal 5, E/e' 16, RT 3,1 m/s, VAI 40. ¿Lectura?",opts:["Normal","Indeterminada","Disfunción diastólica con presiones elevadas","No valorable"],correct:2,fb:"Las 4 variables anormales → disfunción diastólica con presiones de llenado elevadas."},
+    {id:"i5",lvl:"i",stem:"Patrón de llenado con E/A ≤ 0,8 y onda E baja. ¿Qué grado y presiones?",opts:["Grado I, presiones normales","Grado III, presiones altas","Patrón restrictivo","Normal del joven"],correct:0,fb:"E/A ≤ 0,8 con E baja = relajación alterada (grado I) con presiones de llenado normales."},
+    {id:"i6",lvl:"i",stem:"E/A ≥ 2 con tiempo de desaceleración corto. ¿Qué sugiere?",opts:["Grado I","Relajación normal","Patrón restrictivo (grado III), presiones muy elevadas","Estenosis mitral"],correct:2,fb:"E/A ≥ 2 = patrón restrictivo (grado III) con presiones de llenado muy elevadas."},
+    {id:"i7",lvl:"i",stem:"Estenosis aórtica: Vmax 4,2 m/s, gradiente medio 45 mmHg, área 0,8 cm². ¿Severidad?",opts:["Leve","Moderada","Severa","No valorable"],correct:2,fb:"Vmax ≥ 4, gradiente medio ≥ 40 y área ≤ 1,0 cm² = estenosis aórtica severa."},
+    {id:"i8",lvl:"i",stem:"Estenosis aórtica: área 0,9 cm², gradiente medio 28 mmHg, FEVI 35 %. ¿Mejor interpretación?",opts:["Solo moderada por el gradiente","Posible severa de bajo flujo–bajo gradiente","Leve","Artefacto"],correct:1,fb:"Área ≤ 1,0 con gradiente solo moderado y FEVI baja: sospecha severa de bajo flujo–bajo gradiente. No te quedes en el gradiente."},
+    {id:"i9",lvl:"i",stem:"Insuficiencia mitral con vena contracta 0,7 cm y orificio regurgitante 0,42 cm². ¿Severidad?",opts:["Leve","Moderada","Severa","Trivial"],correct:2,fb:"VC ≥ 0,7 cm y EROA ≥ 0,40 cm² = insuficiencia mitral severa."},
+    {id:"i10",lvl:"i",stem:"FEVI 62 % pero GLS −13 % en paciente que recibe quimioterapia. ¿Qué indica?",opts:["Todo normal","Disfunción sistólica subclínica","Estenosis aórtica","Error de medición seguro"],correct:1,fb:"GLS reducido con FEVI conservada = disfunción subclínica; es clave en cardiotoxicidad."},
+    {id:"i11",lvl:"i",stem:"Volumen AI indexado 47 mL/m², ritmo sinusal, válvula mitral normal. ¿Qué sugiere?",opts:["Hallazgo irrelevante","Presiones de llenado crónicamente elevadas","Estenosis mitral","Función sistólica baja"],correct:1,fb:"AI dilatada con mitral normal y ritmo sinusal refleja presiones elevadas y mayor riesgo de fibrilación auricular."},
+    {id:"i12",lvl:"i",stem:"VCI de 24 mm que colapsa < 50 % con la inspiración. ¿Presión de AD estimada?",opts:["~3 mmHg","~8 mmHg","~15 mmHg","No estimable"],correct:2,fb:"VCI > 21 mm con colapso < 50 % → presión de aurícula derecha ≈ 15 mmHg (elevada)."},
+    {id:"i13",lvl:"i",stem:"Hombre de 78 años: septo basal 14 mm, resto de paredes y cavidad del VI normales, FEVI normal. ¿Interpretación más probable?",opts:["Hipertrofia concéntrica difusa","Septum sigmoide (abultamiento basal benigno)","Miocardiopatía dilatada","Estenosis mitral"],correct:1,fb:"El engrosamiento aislado del septo basal en un anciano suele ser un septum sigmoide, no hipertrofia difusa ni HCM."},
+    {id:"i14",lvl:"i",stem:"Un estudio técnicamente fuera de eje (acortado) puede afectar las medidas del VI. ¿Cómo?",opts:["Las sobreestima","Las subestima (VI falsamente pequeño, FEVI imprecisa)","No las afecta","Solo afecta la aurícula"],correct:1,fb:"Una imagen fuera de eje o acortada subestima diámetros y volúmenes; si las cifras no cuadran con la clínica, sospecha la calidad técnica."},
+
+    /* ===== AVANZADO ===== */
+    {id:"a1",lvl:"a",stem:"Mujer hipertensa con disnea: hipertrofia concéntrica, FEVI 60 %, disfunción diastólica grado II con presiones elevadas y AI dilatada. ¿Diagnóstico más probable?",opts:["IC con FE reducida","IC con FE preservada (HFpEF)","Estenosis mitral","Corazón normal"],correct:1,fb:"El conjunto (hipertrofia concéntrica + FE preservada + presiones elevadas + AI dilatada) configura una HFpEF."},
+    {id:"a2",lvl:"a",stem:"Septo asimétrico de 18 mm, movimiento sistólico anterior de la mitral (SAM) y gradiente dinámico en el tracto de salida. ¿Qué sospechas?",opts:["Miocardiopatía dilatada","Miocardiopatía hipertrófica","Estenosis aórtica calcificada","Amiloidosis"],correct:1,fb:"Hipertrofia septal asimétrica + SAM + obstrucción dinámica del TSVI = miocardiopatía hipertrófica."},
+    {id:"a3",lvl:"a",stem:"Disnea súbita: VD dilatado e hipocontráctil con ápex relativamente preservado, septo desplazado y PSAP moderadamente elevada. ¿Qué cuadro encaja?",opts:["Sobrecarga aguda del VD (p. ej. TEP)","Estenosis aórtica","HFpEF crónica","Derrame pericárdico leve"],correct:0,fb:"Dilatación/disfunción aguda del VD con ápex conservado sugiere sobrecarga aguda de presión; considerar tromboembolismo pulmonar."},
+    {id:"a4",lvl:"a",stem:"Paredes muy engrosadas, fisiología restrictiva, aurículas dilatadas y en el strain el ápex 'se salva' (apical sparing). ¿Qué orienta?",opts:["Hipertrofia hipertensiva típica","Amiloidosis cardíaca","Corazón de deportista","Estenosis mitral"],correct:1,fb:"El 'apical sparing' con paredes gruesas y patrón restrictivo orienta a amiloidosis cardíaca."},
+    {id:"a5",lvl:"a",stem:"Estenosis aórtica con área ≤ 1,0 cm², gradiente bajo y FEVI reducida. ¿Qué ayuda a diferenciar severa verdadera de pseudosevera?",opts:["Repetir en reposo","Eco de estrés con dobutamina a dosis baja","Holter de 24 h","Radiografía de tórax"],correct:1,fb:"El eco-estrés con dobutamina a dosis baja diferencia la estenosis severa verdadera de la pseudosevera en bajo flujo."},
+    {id:"a6",lvl:"a",stem:"Insuficiencia mitral primaria severa con FEVI 'normal' de 58 %. ¿Por qué preocupa?",opts:["No preocupa, la FE es normal","En MR severa una FEVI < 60 % ya sugiere disfunción del VI","Indica estenosis","La FE no aplica a la mitral"],correct:1,fb:"En MR severa, las condiciones de carga 'inflan' la FE; una FEVI < 60 % ya traduce disfunción del VI."},
+    {id:"a7",lvl:"a",stem:"Derrame pericárdico con colapso diastólico del VD, colapso de la AD y VCI dilatada sin colapso. ¿Qué indica?",opts:["Derrame trivial","Signos de taponamiento","Pericarditis seca","Hallazgo normal"],correct:1,fb:"Colapso de cavidades derechas + VCI pletórica = signos de taponamiento; es una urgencia."},
+    {id:"a8",lvl:"a",stem:"Al evaluar la diástole con FEVI normal resultan 2 de 4 variables anormales. ¿Cómo se reporta?",opts:["Función diastólica normal","Indeterminada","Disfunción severa","Restrictivo"],correct:1,fb:"Con exactamente la mitad de las variables anormales, la función diastólica se reporta como indeterminada."},
+    {id:"a9",lvl:"a",stem:"PSAP reportada como '50 mmHg', pero el informe anota envolvente de RT incompleta y de mala calidad. ¿Conducta?",opts:["Tratar hipertensión pulmonar de inmediato","No sobreinterpretar el valor; correlacionar y repetir/escalar","Ignorar todo el eco","Asumir que es normal"],correct:1,fb:"Una PSAP derivada de una envolvente pobre no es confiable: correlaciona con la clínica y considera repetir el estudio."},
+    {id:"a10",lvl:"a",stem:"AI severamente dilatada en un paciente con fibrilación auricular permanente. ¿Cómo cambia la interpretación?",opts:["Confirma presiones elevadas igual","Su valor como marcador de presiones se debilita por la FA","Indica estenosis aórtica","No tiene relación con la AI"],correct:1,fb:"La FA por sí misma dilata la AI; su utilidad como marcador de presiones de llenado disminuye en ese contexto."},
+    {id:"a11",lvl:"a",stem:"Disnea con paredes no engrosadas: 'rebote' septal con la respiración, e' medial preservado/alto y reversión del flujo en venas hepáticas en espiración. ¿Qué orienta?",opts:["Miocardiopatía restrictiva","Pericarditis constrictiva","Estenosis mitral","HFpEF"],correct:1,fb:"Interdependencia ventricular (rebote septal), 'annulus reversus' (e' medial alto) y reversión espiratoria hepática orientan a pericarditis constrictiva."},
+    {id:"a12",lvl:"a",stem:"Dolor torácico: hipocinesia regional de la cara anterior con el resto del VI normal. ¿Qué sugiere el patrón?",opts:["Afectación global (miocarditis difusa)","Alteración segmentaria de probable origen isquémico","Amiloidosis","Hallazgo normal"],correct:1,fb:"Una alteración regional que respeta un territorio coronario sugiere causa isquémica, no una miocardiopatía difusa."},
+    {id:"a13",lvl:"a",stem:"E/A aparentemente normal. Con maniobra de Valsalva la E cae más que la A y el E/A disminuye. ¿Qué revela?",opts:["Función diastólica normal","Patrón pseudonormal con presiones de llenado elevadas","Estenosis aórtica","Artefacto"],correct:1,fb:"La caída desproporcionada de la E con Valsalva desenmascara un patrón pseudonormal (grado II) con presiones elevadas."},
+    {id:"a14",lvl:"a",stem:"La PSAP y los gradientes valvulares parecen 'normales', pero la interrogación Doppler no estaba alineada con el flujo. ¿Qué implica?",opts:["Los valores son fiables","Pueden estar falsamente bajos (el ángulo subestima la velocidad)","Están sobreestimados","No tiene efecto"],correct:1,fb:"Un ángulo no paralelo subestima la velocidad; el dato fiable es la velocidad máxima de buena calidad, no un valor 'normal' mal alineado."}
+  ];
+
+  var LVL={b:"Básico",i:"Intermedio",a:"Avanzado"};
+  var host=$("#examHost"), titleEl=$("#examTitle");
+  var memUsed=[];
+  function loadUsed(){try{var v=localStorage.getItem("eco_used");if(v)return JSON.parse(v);}catch(e){}return memUsed.slice();}
+  function saveUsed(a){memUsed=a.slice();try{localStorage.setItem("eco_used",JSON.stringify(a));}catch(e){}}
+  function byId(id){for(var i=0;i<BANK.length;i++)if(BANK[i].id===id)return BANK[i];return null;}
+  function inScope(q,lvl){return lvl==="mix"||q.lvl===lvl;}
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function poolFor(lvl){var u=loadUsed();return BANK.filter(function(q){return inScope(q,lvl)&&u.indexOf(q.id)<0;});}
+  function totalFor(lvl){return BANK.filter(function(q){return inScope(q,lvl);}).length;}
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+
+  var cfg={lvl:"mix",len:10};
+  var exam=null;
+  var GHOST="font-family:var(--font-display);font-weight:600;font-size:14px;background:#fff;color:var(--brand);border:1px solid var(--line);padding:11px 18px;border-radius:9px;cursor:pointer";
+
+  function renderConfig(){
+    exam=null; titleEl.textContent="Configura tu intento"; host.innerHTML="";
+    var f1=el("div","field"); f1.appendChild(el("label",null,"Nivel de dificultad"));
+    var seg=el("div","seg"); seg.setAttribute("role","group");
+    [["mix","Mixto"],["b","Básico"],["i","Intermedio"],["a","Avanzado"]].forEach(function(o){
+      var b=el("button",null,o[1]); b.type="button";
+      b.setAttribute("aria-pressed",String(cfg.lvl===o[0]));
+      b.addEventListener("click",function(){cfg.lvl=o[0];renderConfig();});
+      seg.appendChild(b);
+    });
+    f1.appendChild(seg); host.appendChild(f1);
+
+    var f2=el("div","field"); f2.appendChild(el("label",null,"Número de preguntas"));
+    var seg2=el("div","seg");
+    [8,10,12].forEach(function(n){
+      var b=el("button",null,String(n)); b.type="button";
+      b.setAttribute("aria-pressed",String(cfg.len===n));
+      b.addEventListener("click",function(){cfg.len=n;renderConfig();});
+      seg2.appendChild(b);
+    });
+    f2.appendChild(seg2); host.appendChild(f2);
+
+    var pool=poolFor(cfg.lvl), total=totalFor(cfg.lvl);
+    var info=el("div","readout");
+    info.appendChild(el("div","label","Disponibilidad"));
+    info.appendChild(el("div","why","Preguntas nuevas en este nivel: "+pool.length+" de "+total+". Las ya respondidas no se repiten."));
+    host.appendChild(info);
+
+    var actions=el("div"); actions.style.cssText="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap";
+    if(pool.length===0){
+      var msg=el("div","trap"); msg.style.margin="0 0 4px"; msg.innerHTML="<b>Completaste todas las preguntas de este nivel.</b> Reinícialo para volver a practicarlas.";
+      host.appendChild(msg);
+      var rb=el("button","primary","Reiniciar este nivel"); rb.type="button";
+      rb.addEventListener("click",function(){resetScope(cfg.lvl);});
+      actions.appendChild(rb);
+    }else{
+      var sb=el("button","primary","Comenzar examen"); sb.type="button";
+      sb.addEventListener("click",startExam); actions.appendChild(sb);
+      if(loadUsed().length){
+        var rb2=el("button",null,"Reiniciar preguntas vistas"); rb2.type="button"; rb2.style.cssText=GHOST;
+        rb2.addEventListener("click",function(){resetScope("mix");});
+        actions.appendChild(rb2);
+      }
+    }
+    host.appendChild(actions);
+  }
+
+  function resetScope(lvl){
+    var keep=loadUsed().filter(function(id){var q=byId(id);return q&&!inScope(q,lvl);});
+    saveUsed(keep); renderConfig();
+  }
+
+  function startExam(){
+    var pool=poolFor(cfg.lvl); if(!pool.length){renderConfig();return;}
+    shuffle(pool);
+    var qs=pool.slice(0,Math.min(cfg.len,pool.length));
+    var u=loadUsed(); qs.forEach(function(q){u.push(q.id);}); saveUsed(u);
+    exam={qs:qs,idx:0,answers:[],stats:{b:[0,0],i:[0,0],a:[0,0]}};
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    var q=exam.qs[exam.idx], n=exam.qs.length;
+    titleEl.textContent="Pregunta "+(exam.idx+1)+" de "+n;
+    host.innerHTML="";
+    var prog=el("div","progress"); var bar=el("i"); bar.style.width=Math.round(exam.idx/n*100)+"%"; prog.appendChild(bar); host.appendChild(prog);
+    var meta=el("div","examMeta");
+    meta.appendChild(el("span","lvlbadge lvl-"+q.lvl,LVL[q.lvl]));
+    meta.appendChild(el("span",null,"Aciertos: "+exam.answers.filter(function(a){return a;}).length+" / "+exam.answers.length));
+    host.appendChild(meta);
+    var qd=el("div","q");
+    qd.appendChild(el("div","stem",(exam.idx+1)+". "+q.stem));
+    var fb=el("div","fb");
+    q.opts.forEach(function(opt,oi){
+      var b=el("button","opt",opt); b.type="button";
+      b.addEventListener("click",function(){
+        if(qd.dataset.done)return; qd.dataset.done="1";
+        $$(".opt",qd).forEach(function(x){x.disabled=true;});
+        var ok=oi===q.correct; exam.answers.push(ok);
+        exam.stats[q.lvl][1]++; if(ok)exam.stats[q.lvl][0]++;
+        if(ok){b.classList.add("correct");}else{b.classList.add("wrong");$$(".opt",qd)[q.correct].classList.add("correct");}
+        fb.textContent=q.fb; fb.classList.add("show");
+        bar.style.width=Math.round((exam.idx+1)/n*100)+"%";
+        var nb=el("button","primary",exam.idx+1<n?"Siguiente":"Ver resultados"); nb.type="button"; nb.style.marginTop="14px";
+        nb.addEventListener("click",function(){exam.idx++; if(exam.idx<n)renderQuestion(); else renderResults();});
+        qd.appendChild(nb); nb.focus();
+      });
+      qd.appendChild(b);
+    });
+    qd.appendChild(fb); host.appendChild(qd);
+  }
+
+  function renderResults(){
+    var n=exam.qs.length, correct=exam.answers.filter(function(a){return a;}).length, pct=Math.round(correct/n*100);
+    titleEl.textContent="Resultado del intento"; host.innerHTML="";
+    var head=el("div","readout");
+    head.appendChild(el("div","label","Desempeño global"));
+    var res=el("div","result",correct+" / "+n+"  ·  "+pct+" %");
+    res.style.color=pct>=80?"var(--ok)":pct>=60?"var(--warn)":"var(--alert)";
+    head.appendChild(res);
+    head.appendChild(el("div","why",pct>=80?"Dominio sólido de la lectura del informe.":pct>=60?"Buen avance; revisa los temas marcados abajo.":"Conviene repasar las secciones del manual y reintentar."));
+    host.appendChild(head);
+    host.appendChild(el("div","reportTitle","Desempeño por nivel"));
+    ["b","i","a"].forEach(function(L){
+      var s=exam.stats[L]; if(s[1]===0)return;
+      var p=Math.round(s[0]/s[1]*100);
+      var row=el("div","statrow");
+      row.appendChild(el("span","statlbl",LVL[L]));
+      var track=el("div","statbar"); var fill=el("i"); fill.style.width=p+"%";
+      fill.style.background=p>=80?"var(--ok)":p>=60?"var(--warn)":"var(--alert)";
+      track.appendChild(fill); row.appendChild(track);
+      row.appendChild(el("span","statnum",s[0]+"/"+s[1]));
+      host.appendChild(row);
+    });
+    var pool=poolFor(cfg.lvl);
+    var actions=el("div"); actions.style.cssText="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap";
+    if(pool.length>0){
+      var again=el("button","primary","Hacer otro examen (preguntas nuevas)"); again.type="button";
+      again.addEventListener("click",startExam); actions.appendChild(again);
+    }else{
+      var done=el("div","clin"); done.style.margin="0 0 6px"; done.innerHTML="<b>Completaste el banco de este nivel.</b> Reinícialo para volver a practicar.";
+      host.appendChild(done);
+      var rs=el("button","primary","Reiniciar este nivel"); rs.type="button";
+      rs.addEventListener("click",function(){resetScope(cfg.lvl);}); actions.appendChild(rs);
+    }
+    var cfgBtn=el("button",null,"Cambiar nivel"); cfgBtn.type="button"; cfgBtn.style.cssText=GHOST;
+    cfgBtn.addEventListener("click",renderConfig); actions.appendChild(cfgBtn);
+    host.appendChild(actions);
+    host.appendChild(el("div","scorebar","Quedan "+pool.length+" preguntas nuevas en el nivel "+(cfg.lvl==="mix"?"Mixto":LVL[cfg.lvl])+"."));
+  }
+
+  renderConfig();
+
+})();
+</script>
+</body>
+</html>
